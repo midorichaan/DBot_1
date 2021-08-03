@@ -7,8 +7,15 @@ import datetime
 import traceback
 import gc
 import json
+import pickle
+import sqlite3
 
 import config
+
+sqlite3.register_converter('pickle', pickle.loads)
+sqlite3.register_converter('json', json.loads)
+sqlite3.register_adapter(dict, json.dumps)
+sqlite3.register_adapter(list, pickle.dumps)
 
 class Bot(commands.Bot):
     
@@ -25,6 +32,9 @@ class Bot(commands.Bot):
         self._ext = list()
         self._is_ready = False
         self.intents = discord.Intents.all()
+        self.database = sqlite3.connect("database.db", detect_types=sqlite3.PARSE_DECLTYPES, isolation_level=None)
+        self.database.row_factory = sqlite3.Row
+        self.db = self.database.cursor()
         
         logging.basicConfig(level=logging.WARNING, format="[DebugLog] %(levelname)-8s: %(message)s")
     
