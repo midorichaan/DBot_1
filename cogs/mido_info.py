@@ -1,12 +1,39 @@
 import discord
 from discord.ext import commands
 
+import psutil
+import platform
+
 from lib import util
 
 class mido_info(commands.Cog):
     
     def __init__(self, bot):
         self.bot = bot
+
+    #about
+    @commands.command(name="about", description="Botの概要を表示します", usage="[prefix]about")
+    async def about(self, ctx):
+        e = discord.Embed(title="Bot Information", timestamp=ctx.message.created_at)
+        e.set_footer(text="Created by Midorichan#3451")
+        
+        e.add_field(name="サーバー数", value=len(self.bot.guilds))
+        e.add_field(name="ユーザー数", value=len(self.bot.users))
+        e.add_field(name="Pythonバージョン", value=platform.python_version())
+        e.add_field(name="discord.py バージョン", value=discord.__version__)
+        
+        memory = psutil.virtual_memory()
+        all_memory = str(memory.total / 1000000000)[0:3]
+        used_memory = str(memory.used / 1000000000)[0:3]
+        available_memory = str(memory.available/1000000000)[0:3]
+        memory_percent = memory.percent
+        
+        e.add_field(name="プロセッサ", value=platform.processor())
+        e.add_field(name="OS", value=f"{platform.system()} \n{platform.release()} ({platform.version()})")
+        e.add_field(name="メモリ", value=f"メモリ容量: {all_memory}GB\n使用量: {used_memory}GB ({memory_percent}%)\n空き容量: {available_memory}GB ({100 - memory_percent}%)")
+        e.add_field(name="ソースコード", value="https://github.com/Midorichaan/DBot_1")
+        
+        await ctx.send(embed=e)
     
     #ping
     @commands.command(name="ping", description="Ping値を表示します", usage="[prefix]ping")
