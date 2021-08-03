@@ -1,0 +1,5 @@
+discord.py[voice]
+sqlite3
+psutil
+youtube-db
+google-api-python-client
