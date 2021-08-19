@@ -8,6 +8,37 @@ class mido_role_panel(commands.Cog):
         
         self.bot.execute("CREATE TABLE IF NOT EXISTS panelroles(panel_id integer PRIMARY KEY NOT NULL, roles json)")
     
+    @commands.Cog.listener()
+    async def on_raw_reaction_add(self, payload):
+        db = self.bot.db.execute("SELECT * FROM panelroles WHERE panel_id=?", (payload.message_id,)).fetchone()
+        
+        if db:
+            role = db["roles"].get(str(payload.emoji), None):
+            
+            if role:
+                m = payload.member
+                msg = await self.bot.fetch_message(payload.message_id)
+                r = self.bot.get_guild(payload.guild_id).get_role(role)
+                
+                if m.id == self.bot.user.id:
+                    return
+                
+                try:
+                    await msg.remove_reaction(str(payload.emoji), m)
+                except:
+                    pass
+                
+                try:
+                    if int(role) in [i.id for i in m.roles]:
+                        await m.remove_roles(r)
+                        await msg.channel.send("役職を剥奪しました！", delete_after=3)
+                    else:
+                        await m.add_roles(r)
+                        await msg.channel.send("役職を付与しました！", delete_after=3)
+                except Exception as exc:
+                    await msg.channel.send("エラーが発生したため、役職を付与できませんでした")
+                    await msg.channel.send(f"```py\n{exc}\n```")
+    
     #rolepanel
     @commands.group(name="rolepanel", aliases=["rp", "panel"], description="役職パネル関連のコマンドです", usage="[prefix]rolepanel <args> [args]", invoke_without_command=True)
     async def rolepanel(self, ctx):
@@ -48,7 +79,7 @@ class mido_role_panel(commands.Cog):
             await ctx.send(f"メッセージが見つからなかった、またはエラーが発生しました")
             return await ctx.send(f"> Debug Log\n```py\n{exc}\n```")
         
-        db = self.bot.db.execute("SELECT * FROM panelroles WHERE panel_id=?", (panel_id,))
+        db = self.bot.db.execute("SELECT * FROM panelroles WHERE panel_id=?", (panel_id,)).fetchone()
         
         if db:
             self.bot.db.execute("DELETE FROM panelroles WHERE panel_id=?", (panel_id,))
@@ -87,7 +118,7 @@ class mido_role_panel(commands.Cog):
             await ctx.send(f"メッセージが見つからなかった、またはエラーが発生しました")
             return await ctx.send(f"> Debug Log\n```py\n{exc}\n```")
         
-        db = self.bot.db.execute("SELECT * FROM panelroles WHERE panel_id=?", (panel_id,))
+        db = self.bot.db.execute("SELECT * FROM panelroles WHERE panel_id=?", (panel_id,)).fetchone()
         
         if db:
             rd = db["roles"]
@@ -123,7 +154,7 @@ class mido_role_panel(commands.Cog):
             await ctx.send(f"メッセージが見つからなかった、またはエラーが発生しました")
             return await ctx.send(f"> Debug Log\n```py\n{exc}\n```")
         
-        db = self.bot.db.execute("SELECT * FROM panelroles WHERE panel_id=?", (panel_id,))
+        db = self.bot.db.execute("SELECT * FROM panelroles WHERE panel_id=?", (panel_id,)).fetchone()
         
         if db:
             rd = db["roles"]
