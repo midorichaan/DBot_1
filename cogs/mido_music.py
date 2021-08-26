@@ -11,7 +11,6 @@ import config
 
 youtube_dl.utils.bug_reports_message = lambda: ''
 ytdl_format_options = {
-    'proxy': f'{config.PROXY_URL}:{config.PROXY_PORT}',
     'format': 'bestaudio/best',
     'extractaudio': True,
     'audioformat': 'mp3',
@@ -38,7 +37,11 @@ class mido_music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
-        self.youtube = build("youtube", "v3", developerKey=config.YOUTUBE_KEY)
+        
+        if hasattr(config, "YOUTUBE_KEY"):
+            self.youtube = build("youtube", "v3", developerKey=config.YOUTUBE_KEY)
+        else:
+            raise Exception("YouTube API v3 Key is required")
     
     #get_data
     async def get_data(self, ctx, key, download=False):
