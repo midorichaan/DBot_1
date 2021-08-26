@@ -29,6 +29,7 @@ class Bot(commands.Bot):
         self.logging = logging.getLogger("discord")
         self.jsondata = None
         self.uptime = None
+        self.color = config.EMBED_COLOR or discord.Embed.Empty
         self._ext = list()
         self._is_ready = False
         self.intents = discord.Intents.all()
