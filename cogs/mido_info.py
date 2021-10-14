@@ -15,7 +15,7 @@ class mido_info(commands.Cog):
     @commands.command(name="about", description="Botの概要を表示します", usage="[prefix]about")
     async def about(self, ctx):
         e = discord.Embed(title="Bot Information", timestamp=ctx.message.created_at)
-        e.set_footer(text="Created by Midorichan#3451")
+        e.set_footer(text="CopyRight ©️Midorichan#3451")
         
         e.add_field(name="サーバー数", value=len(self.bot.guilds))
         e.add_field(name="ユーザー数", value=len(self.bot.users))
