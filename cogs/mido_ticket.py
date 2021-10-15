@@ -6,6 +6,9 @@ class mido_ticket(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         
+        self.bot.db.execute("CREATE TABLE IF NOT EXISTS tickets(channel_id int, panel_id int, author_id int, status int)")
+        self.bot.db.execute("CREATE TABLE IF NOT EXISTS ticketpanel(panel_id int, channel_id int, guild_id int, author_id int)")
+        
     #gen_help
     def gen_help(self, ctx, cmd=None):
         if cmd:
@@ -60,7 +63,7 @@ class mido_ticket(commands.Cog):
     
     #ticket panel
     @ticket.command(name="panel", description="チケットのパネルを作成/削除します", usage="panel <create/delete> [channel]")
-    async def panel(self, ctx, mode: str=None, channel: commands.TextChannelConverter=None):
+    async def panel(self, ctx, mode: str=None, panel_id: typing.Optional[int]=None, channel: commands.TextChannelConverter=None):
         m = await ctx.reply("> 処理中...")
         
         if not channel:
@@ -74,6 +77,16 @@ class mido_ticket(commands.Cog):
             self.bot.db.execute("INSERT INTO ticketpanel VALUES(?, ?, ?, ?)", (msg.id, channel.id, ctx.guild.id, ctx.author.id))
             return await m.edit(content="> 作成しました！")
         elif mode == "delete":
+            if not panel_id:
+                return await m.edit(content="> パネルIDを入力してね！")
+            
+            db = self.bot.db.execute("SELECT * FROM ticketpanel WHERE panel_id=?", (panel_id,)).fetchone()
+            
+            if not db:
+                return await m.edit(content="> パネルIDを確認してね！")
+            
+            self.bot.db.execute("DELETE FROM ticketpanel WHERE panel_id=?", (panel_id,))
+            return await m.edit(content="> パネルを削除したよ！")
         else:
             return await m.edit(content="> createかdeleteか指定してね！")
         
