@@ -7,9 +7,15 @@ class mido_ticket(commands.Cog):
         self.bot = bot
         
         self.bot.db.execute("CREATE TABLE IF NOT EXISTS tickets(channel_id int, panel_id int, author_id int, status int)")
-        self.bot.db.execute("CREATE TABLE IF NOT EXISTS ticketconfig(guild_id int, category_id int, admin_role_id int)")
+        self.bot.db.execute("CREATE TABLE IF NOT EXISTS ticketconfig(guild_id int, category_id int, admin_role_id int, mention int)")
         self.bot.db.execute("CREATE TABLE IF NOT EXISTS ticketpanel(panel_id int, channel_id int, guild_id int, author_id int)")
         
+    #is_mod
+    def is_mod(ctx):
+        if ctx.guild:
+            return ctx.author.guild_permissions.manage_guild
+        return False
+    
     #gen_help
     def gen_help(self, ctx, cmd=None):
         if cmd:
@@ -26,7 +32,7 @@ class mido_ticket(commands.Cog):
     
     #create_ticket
     async def create_ticket(self, ctx, author, *, reason=None):
-        db = self.bot.db.execute("SELECT * FROM ticketconfig WHERE guild_id=?", (ctx.guild.id, ))
+        db = self.bot.db.execute("SELECT * FROM ticketconfig WHERE guild_id=?", (ctx.guild.id, )).fetchone()
         
         if db:
             e = discord.Embed(title=f"{author} Ticket", description=f"```\n{reason or '理由なし'}\n```", color=self.bot.color)
@@ -38,7 +44,11 @@ class mido_ticket(commands.Cog):
                 author: discord.PermissionOverwrite(read_messages=True, add_reactions=True, view_channel=True, send_messages=True, embed_links=True, attach_files=True, read_message_history=True, external_emojis=True)
             }
             ch = await ctx.guild.get_channel(db["category_id"]).create_text_channel(name=f"ticket-{author.id}-{len(chs)}", overwrites=ow)
-            m = await ch.send(content=f"{author.mention} →", embed=e)
+            
+            if db["mention"]:
+                m = await ch.send(content=f"{author.mention} {ctx.guild.get_role(db['admin_role_id']).mention} →", embed=e)
+            else:
+                m = await ch.send(content=f"{author.mention} →", embed=e)
             await m.add_reaction("🔒")
             
             self.bot.db.execute("INSERT INTO tickets VALUES(?, ?, ?, ?)", (ch.id, m.id, author.id, 1))
@@ -64,6 +74,7 @@ class mido_ticket(commands.Cog):
     
     #ticket panel
     @ticket.command(name="panel", description="チケットのパネルを作成/削除します", usage="panel <create/delete> [channel]")
+    @commands.check(is_mod)
     async def panel(self, ctx, mode: str=None, panel_id: typing.Optional[int]=None, channel: commands.TextChannelConverter=None):
         m = await ctx.reply("> 処理中...")
         
@@ -125,6 +136,57 @@ class mido_ticket(commands.Cog):
             return await m.edit(content="> チケットを作成しました！")
         except:
             return await m.edit(content="> チケットを作成できなかったよ...")
+    
+    #ticket config
+    @ticket.command(name="config", description="チケットシステムの設定を変更します", usage="ticket config [options..]", invoke_without_command=False)
+    @commands.check(is_mod)
+    async def config(self, ctx):
+        pass
+    
+    #config role
+    @config.command(name="role", description="チケット作成時にメンションするロールを設定します", usage="config role <role>")
+    @commands.check(is_mod)
+    async def role(self, ctx, role: commands.RoleConverter=None):
+        m = await ctx.reply("> 処理中...")
         
+        if not role:
+            return await m.edit(content="> ロールが存在しないよ！")
+        
+        db = self.bot.db.execute("SELECT * FROM ticketconfig WHERE guid_id=?", (ctx.guild.id,)).fetchone()
+        if not db:
+            return await m.edit(content="> データが存在しないよ！")
+        
+        self.bot.db.execute("UPDATE ticketconfig SET admin_role_id=? WHERE guild_id=?", (role.id, ctx.guild.id))
+        await m.edit(content="> 設定を変更したよ！")
+    
+    #config mentino
+    @config.command(name="mention", description="チケット作成時にメンションするか設定します", usage="config mention <on/off>")
+    @commands.check(is_mod)
+    async def mention(self, ctx, mention: bool=False):
+        m = await ctx.reply("> 処理中...")
+        
+        db = self.bot.db.execute("SELECT * FROM ticketconfig WHERE guid_id=?", (ctx.guild.id,)).fetchone()
+        if not db:
+            return await m.edit(content="> データが存在しないよ！")
+        
+        self.bot.db.execute("UPDATE ticketconfig SET mention=? WHERE guild_id=?", (int(mention), ctx.guild.id))
+        await m.edit(content="> 設定を変更したよ！")
+    
+    #config category
+    @config.command(name="category", description="チケットを作成するカテゴリを設定します", usage="config category <category>")
+    @commands.check(is_mod)
+    async def category(self, ctx, category: commands.CategoryChannelConverter=None):
+        m = await ctx.reply("> 処理中...")
+        
+        if not category:
+            return await m.edit(content="> カテゴリを入力してね！")
+        
+        db = self.bot.db.execute("SELECT * FROM ticketconfig WHERE guid_id=?", (ctx.guild.id,)).fetchone()
+        if not db:
+            return await m.edit(content="> データが存在しないよ！")
+        
+        self.bot.db.execute("UPDATE ticketconfig SET category_id=? WHERE guild_id=?", (category.id, ctx.guild.id))
+        await m.edit(content="> 設定を変更したよ！")
+    
 def setup(bot):
     bot.add_cog(mido_ticket(bot))
