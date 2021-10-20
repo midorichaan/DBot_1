@@ -89,6 +89,22 @@ class mido_ticket(commands.Cog):
             return await m.edit(content="> パネルを削除したよ！")
         else:
             return await m.edit(content="> createかdeleteか指定してね！")
+    
+    #ticket close
+    @ticket.command(name="close", description="チケットをクローズします。", usage="close")
+    async def close(self, ctx):
+        m = await ctx.reply("> 処理中...")
+        
+        db = self.bot.db.execute("SELECT * FROM tickets WHERE channel_id=?", (ctx.channel.id,)).fetchone()
+        
+        if not db:
+            return await m.edit(content="> このチャンネルはチケットチャンネルじゃないよ！")
+        
+        if not db["status"] == 1:
+            return await m.edit(content="> このチャンネルはすでにクローズされているよ！")
+        
+        self.bot.db.execute("UPDATE tickets SET status=0 WHERE channel_id=?", (ctx.channel.id,))
+        await m.edit(content="> チケットをクローズしたよ！")
         
 def setup(bot):
     bot.add_cog(mido_ticket(bot))
