@@ -8,8 +8,8 @@ PREFIX = ""
 OWNER_ID = 
 
 #Googleから取得した、YouTube APIキーを入力してください。
-#音楽機能を使用する際にAPIキーが必須となります。
+#音楽機能を使用する際に便利かも...? (予)
 YOUTUBE_KEY = ""
 
-#Embed(埋め込み)の枠の色を指定できます。16進数(hex)を入力してください。
+#Embed(埋め込み)の枠の色を指定できます。16進数(hex)または None を入力してください。
 EMBED_COLOR = None
