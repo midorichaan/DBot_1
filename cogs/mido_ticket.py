@@ -7,6 +7,7 @@ class mido_ticket(commands.Cog):
         self.bot = bot
         
         self.bot.db.execute("CREATE TABLE IF NOT EXISTS tickets(channel_id int, panel_id int, author_id int, status int)")
+        self.bot.db.execute("CREATE TABLE IF NOT EXISTS ticketconfig(guild_id int, category_id int, admin_role_id int)")
         self.bot.db.execute("CREATE TABLE IF NOT EXISTS ticketpanel(panel_id int, channel_id int, guild_id int, author_id int)")
         
     #gen_help
@@ -37,7 +38,7 @@ class mido_ticket(commands.Cog):
                 author: discord.PermissionOverwrite(read_messages=True, add_reactions=True, view_channel=True, send_messages=True, embed_links=True, attach_files=True, read_message_history=True, external_emojis=True)
             }
             ch = await ctx.guild.get_channel(db["category_id"]).create_text_channel(name=f"ticket-{author.id}-{len(chs)}", overwrites=ow)
-            m = await ch.send(embed=e)
+            m = await ch.send(content=f"{author.mention} →", embed=e)
             await m.add_reaction("🔒")
             
             self.bot.db.execute("INSERT INTO tickets VALUES(?, ?, ?, ?)", (ch.id, m.id, author.id, 1))
@@ -56,7 +57,7 @@ class mido_ticket(commands.Cog):
             c = self.ticket.get_command(cmd)
             
             if not c:
-                return await m.edit(content="> そのコマンドは存在しないよ！")
+                return await m.edit(content=">  そのコマンドは存在しないよ！")
             return await m.edit(content=None, embed=self.gen_help(ctx, c))
         else:
             return await m.edit(content=None, embed=self.gen_help(ctx))
@@ -105,6 +106,25 @@ class mido_ticket(commands.Cog):
         
         self.bot.db.execute("UPDATE tickets SET status=0 WHERE channel_id=?", (ctx.channel.id,))
         await m.edit(content="> チケットをクローズしたよ！")
+    
+    #ticket create
+    @ticket.command(name="create", description="チケットを作成します", usage="create [reason]")
+    async def create(self, ctx, *, reason=None):
+        m = await ctx.reply("> 処理中...")
+        
+        db = self.bot.db.execute("SELECT * FROM ticketconfig WHERE guild_id=?", (ctx.guild.id,)).fetchone()
+        if not db:
+            return await m.edit(content="> データが存在しないよ！")
+        
+        cat = ctx.guild.get_channel(db["category_id"])
+        if not cat:
+            return await m.edit(content="> チャンネルが存在しないよ！")
+        
+        try:
+            await self.create_ticket(ctx, ctx.author, reason=reason)
+            return await m.edit(content="> チケットを作成しました！")
+        except:
+            return await m.edit(content="> チケットを作成できなかったよ...")
         
 def setup(bot):
     bot.add_cog(mido_ticket(bot))
