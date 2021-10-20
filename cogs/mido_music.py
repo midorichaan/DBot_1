@@ -14,7 +14,7 @@ ytdl_format_options = {
     'format': 'bestaudio/best',
     'extractaudio': True,
     'audioformat': 'mp3',
-    'outtmpl': 'musics/%(extractor)s-%(id)s-%(title)s.%(ext)s',
+    'outtmpl': 'musics/%(id)s.%(ext)s',
     'restrictfilenames': True,
     'noplaylist': True,
     'nocheckcertificate': True,
@@ -131,12 +131,6 @@ class mido_music(commands.Cog):
                 return await msg.edit(content="> 30秒が経過したため、キャンセルされたよ！")
             else:
                 query = message.content
-        
-        response = self.youtube.search().list(part="snippet", q=query, type="video").execute()
-        id = response["items"][0]["id"]["videoId"]
-        
-        if not id:
-            return await msg.edit(content="> 動画が見つからなかったよ！")
         
         try:
             data = await self.get_data(ctx, id, True)
@@ -310,7 +304,7 @@ class mido_music(commands.Cog):
             self.bot.loop_queue[ctx.guild.id] = False
         
         while self.bot.queue[ctx.guild.id]:
-            ctx.guild.voice_client.play(discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(self.bot.queue[ctx.guild.id][0]["url"], **ffmpeg_options), volume=vol))
+            ctx.guild.voice_client.play(discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(self.bot.queue[ctx.guild.id][0]["url"], options=ffmpeg_options), volume=vol))
             
             try:
                 while ctx.guild.voice_client.is_playing() or ctx.guild.voice_client.is_paused():
