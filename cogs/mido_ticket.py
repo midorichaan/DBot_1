@@ -53,6 +53,18 @@ class mido_ticket(commands.Cog):
             
             self.bot.db.execute("INSERT INTO tickets VALUES(?, ?, ?, ?)", (ch.id, m.id, author.id, 1))
     
+    #listener
+    @commands.Cog.listener()
+    async def on_raw_reaction_add(self, payload):
+        config = self.bot.db.execute("SELECT * FROM ticketconfig WHERE guild_id=?", (payload.guild_id,)).fetchone()
+        if not config:
+            return
+        
+        db = self.bot.db.execute("SELECT * FROM tickets WHERE channel_id=?", (payload.channel_id,)).fetchone()
+        if not db:
+            return
+        
+    
     #ticket
     @commands.group(name="ticket", description="チケット関連のコマンドです。", invoke_without_command=False)
     async def ticket(self, ctx):
