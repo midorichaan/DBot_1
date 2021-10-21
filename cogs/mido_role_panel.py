@@ -183,5 +183,5 @@ class mido_role_panel(commands.Cog):
         else:
             return await ctx.send("そのIDのパネルは存在しません")
     
- def setup(bot):
+def setup(bot):
     bot.add_cog(mido_role_panel(bot))
