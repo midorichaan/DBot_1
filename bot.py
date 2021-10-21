@@ -20,11 +20,8 @@ sqlite3.register_adapter(list, pickle.dumps)
 class Bot(commands.Bot):
     
     def __init__(self):
-        super().__init__()
-        
-        self.command_prefix = config.PREFIX
-        self.status = discord.Status.idle
-        self.owner_id = config.OWNER_ID
+        super().__init__(command_prefix=config.PREFIX, status=discord.Status.idle, owner_id=config.OWNER_ID, intents=discord.Intents.all())
+
         self.config = config
         self.http.token = config.BOT_TOKEN
         self.session = aiohttp.ClientSession(loop=self.loop)
@@ -34,7 +31,6 @@ class Bot(commands.Bot):
         self.color = config.EMBED_COLOR or discord.Embed.Empty
         self._ext = list()
         self._is_ready = False
-        self.intents = discord.Intents.all()
         self.database = sqlite3.connect("database.db", detect_types=sqlite3.PARSE_DECLTYPES, isolation_level=None)
         self.database.row_factory = sqlite3.Row
         self.db = self.database.cursor()
