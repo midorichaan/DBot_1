@@ -12,7 +12,7 @@ class mido_vote(commands.Cog):
     
     #vote
     @commands.command(name="vote", aliases=["poll"], description="投票を作成します。", usage="vote <args> [args]")
-    async def _vote(self, ctx, question=None, *args=None):
+    async def _vote(self, ctx, question=None, *, args=None):
         m = await ctx.reply("> 処理中...")
         
         if not question:
@@ -29,7 +29,7 @@ class mido_vote(commands.Cog):
         c = 0
         
         for i in args:
-            e.description += f"{self.reactions[c]} {i}"
+            e.description += f"{self.reactions[c]} {i} \n"
             c += 1
             
         await m.edit(content=None, embed=e)

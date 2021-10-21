@@ -45,7 +45,7 @@ class mido_info(commands.Cog):
         latency = round(self.bot.latency * 1000, 2)
         msg_end = time.perf_counter()
         
-        await m.edit(content=f"ぽんぐっ！🏓 \nPing: {round(msg - msg_end, 3) * 1000}\nWebsocket: {latency}")
+        await m.edit(content=f"> ぽんぐっ！🏓 \nPing: {round(msg - msg_end, 3) * 1000}\nWebsocket: {latency}")
     
     #userinfo
     @commands.command(name="userinfo", aliases=["ui", "user"], description="ユーザーの情報を表示します。", usage="[prefix]userinfo [user/member]")
@@ -146,6 +146,7 @@ class mido_info(commands.Cog):
         else:
             e.add_field(name=f"役職({len(srvinfo.roles)})", value="多すぎて表示できないよ！", inline=False)
         
+        e.description = None
         await msg.edit(embed=e)
 
 def setup(bot):

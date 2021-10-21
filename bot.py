@@ -38,7 +38,7 @@ class Bot(commands.Bot):
         logging.basicConfig(level=logging.WARNING, format="[DebugLog] %(levelname)-8s: %(message)s")
     
     @tasks.loop(minutes=10.0)
-    async def gc_loop():
+    async def gc_loop(self):
         print("[System] auto gc start")
         
         try:
@@ -52,7 +52,16 @@ class Bot(commands.Bot):
     async def on_ready(self):
         print("[System] enabling...")
         
-        self._ext = ["cogs.mido_mod", "cogs.mido_info", "cogs.mido_role_panel", "cogs.mido_music", "cogs.mido_vote", "cogs.mido_help"]
+        if not self._is_ready:
+            try:
+                self.remove_command("help")
+                print("[System] Command 'help' removed")
+            except:
+                print("[Error] Command 'help' remove failed")
+            
+            self._is_ready = True
+        
+        self._ext = ["cogs.mido_mod", "cogs.mido_info", "cogs.mido_role_panel", "cogs.mido_music", "cogs.mido_vote", "cogs.mido_ticket", "cogs.mido_help", "jishaku"]
         
         for ext in self._ext:
             try:
@@ -77,15 +86,6 @@ class Bot(commands.Bot):
         except Exception as exc:
             print(f"[Error] jsondata load failed → {exc}")
         
-        if not self._is_ready:
-            try:
-                self.remove_command("help")
-                print("[System] Command 'help' removed")
-            except:
-                print("[Error] Command 'help' remove failed")
-            
-            self._is_ready = True
-        
         await self.change_presence(status=discord.Status.online, activity=discord.Game(name=f"{self.command_prefix}help"))
         print("[System] on_ready!")
     
@@ -105,10 +105,10 @@ class Bot(commands.Bot):
             await ctx.send(content)
 
     async def on_command_error(self, ctx, exc):
-        traceback_exc = f"```{''.join(traceback.TracebackException.from_exception(exc).format())}```"
+        traceback_exc = f"```py\n{''.join(traceback.TracebackException.from_exception(exc).format())}\n```"
         
         if len(str(traceback_exc)) >= 1024:
-            exc = exc
+            exc = f"```py\n{exc}\n```"
         else:
             exc = traceback_exc
         
@@ -127,7 +127,7 @@ class Bot(commands.Bot):
             p = ", ".join([self.jsondata["roles"].get(i) for i in exc.missing_perms])
             await self.reply_or_send(ctx, content=f"> Botの権限が不足してます\n{p}")
         else:
-            await self.reply_or_send(ctx, content=f"> エラー \n```py\n{exc}\n```")
+            await self.reply_or_send(ctx, content=f"> エラー \n{exc}")
         
         print(f"[Error] {exc}")
 

@@ -65,7 +65,7 @@ class mido_mod(commands.Cog):
                     await msg.clear_reactions()
                 except:
                     pass
-                return await msg.edit(content=f"> {member} ({member.id})をこのサーバーからBanしました\n理由: {reason}")
+                return await msg.edit(content=f"> {member} ({member.id})をこのサーバーからBanしました\n理由: \n```\n{reason}\n```")
             elif r.emoji == self.x:
                 try:
                     await msg.clear_reactions()
@@ -126,7 +126,7 @@ class mido_mod(commands.Cog):
                     await msg.clear_reactions()
                 except:
                     pass
-                return await msg.edit(content=f"> {member} ({member.id})をこのサーバーからKickしました\n理由: {reason}")
+                return await msg.edit(content=f"> {member} ({member.id})をこのサーバーからKickしました\n理由: \n```\n{reason}\n```")
             elif r.emoji == self.x:
                 try:
                     await msg.clear_reactions()

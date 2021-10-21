@@ -17,7 +17,7 @@ class mido_role_panel(commands.Cog):
             
             if role:
                 m = payload.member
-                msg = await self.bot.fetch_message(payload.message_id)
+                msg = await self.bot.get_channel(payload.channel_id).fetch_message(payload.message_id)
                 r = self.bot.get_guild(payload.guild_id).get_role(role)
                 
                 if m.id == self.bot.user.id:
@@ -94,7 +94,7 @@ class mido_role_panel(commands.Cog):
         e.set_footer(text=f"{ctx.author} によって作成されました")
         
         m = await ctx.send(embed=e)
-        self.bot.cursor.execute("INSERT INTO panelroles(panel_id, roles) VALUES(?, ?)", (m.id, {}))
+        self.bot.db.execute("INSERT INTO panelroles(panel_id, roles) VALUES(?, ?)", (m.id, {}))
         await ctx.send(f"パネルを作成しました！\nパネルID: {m.id}")
     
     #rolepanel add
@@ -138,7 +138,7 @@ class mido_role_panel(commands.Cog):
     
     #rolepanel remove
     @rolepanel.command(name="remove", description="パネルからロールを削除します", usage="[prefix]rolepanel remove <panel_id> <emoji>", brief="役職の管理")
-    async def remove(self, ctx, panel_id: int=None, emoji: int=None):
+    async def remove(self, ctx, panel_id: int=None, emoji=None):
         if not panel_id:
             return await ctx.send("パネルIDを入力してください")
         
@@ -179,7 +179,7 @@ class mido_role_panel(commands.Cog):
                     
                 return await ctx.send("完了しました！")
             else:
-                return await ctx.send("その絵文字は使用できません")
+                return await ctx.send("データが存在しません")
         else:
             return await ctx.send("そのIDのパネルは存在しません")
     

@@ -42,7 +42,7 @@ class mido_help(commands.Cog):
                 else:
                     e.add_field(name="権限", value="なし")
 
-                return await msg.edit(embed=e)
+                return await ctx.send(embed=e)
             else:
                 return await ctx.send("> そのコマンドは存在しません")
         else:

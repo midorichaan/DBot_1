@@ -1,7 +1,7 @@
 from discord.ext import commands
 
 #resolve_status
-def resolve_status(self, status):        
+def resolve_status(status):        
     if str(status) == "online":
         return "💚オンライン"
     elif str(status) == "dnd":
