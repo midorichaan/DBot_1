@@ -6,7 +6,7 @@ class mido_role_panel(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         
-        self.bot.execute("CREATE TABLE IF NOT EXISTS panelroles(panel_id integer PRIMARY KEY NOT NULL, roles json)")
+        self.bot.db.execute("CREATE TABLE IF NOT EXISTS panelroles(panel_id integer PRIMARY KEY NOT NULL, roles json)")
     
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
