@@ -13,7 +13,7 @@ class mido_role_panel(commands.Cog):
         db = self.bot.db.execute("SELECT * FROM panelroles WHERE panel_id=?", (payload.message_id,)).fetchone()
         
         if db:
-            role = db["roles"].get(str(payload.emoji), None):
+            role = db["roles"].get(str(payload.emoji), None)
             
             if role:
                 m = payload.member
