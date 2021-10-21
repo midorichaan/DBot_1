@@ -20,6 +20,8 @@ sqlite3.register_adapter(list, pickle.dumps)
 class Bot(commands.Bot):
     
     def __init__(self):
+        super().__init__()
+        
         self.command_prefix = config.PREFIX
         self.status = discord.Status.idle
         self.owner_id = config.OWNER_ID
