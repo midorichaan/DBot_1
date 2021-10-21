@@ -53,18 +53,44 @@ class mido_ticket(commands.Cog):
             
             self.bot.db.execute("INSERT INTO tickets VALUES(?, ?, ?, ?)", (ch.id, m.id, author.id, 1))
     
+    #wait_for_close
+    async def wait_for_close(self, user_id):
+        try:
+            r, u = await self.bot.wait_for("reaction_add", check=lambda r,u: r.user.id == user_id, timeout=10.0)
+        except Exception as exc:
+            return False
+        else:
+            if r.emoji == "👍":
+                return True
+            else:
+                return False
+    
     #listener
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
-        config = self.bot.db.execute("SELECT * FROM ticketconfig WHERE guild_id=?", (payload.guild_id,)).fetchone()
-        if not config:
-            return
+        config = self.bot.db.execute("SELECT * FROM ticketconfig WHERE guild_id=?", (payload.guild_id,)).fetchone() or {}
+        db = self.bot.db.execute("SELECT * FROM tickets WHERE channel_id=?", (payload.channel_id,)).fetchone() or {}
+        panel = self.bot.db.execute("SELECT * FROM ticketpanel WHERE panel_id=?", (payload.message_id,)).fetchone() or {}
         
-        db = self.bot.db.execute("SELECT * FROM tickets WHERE channel_id=?", (payload.channel_id,)).fetchone()
-        if not db:
-            return
+        if payload.message_id == panel.get("panel_id", None):
+            if payload.emoji == "📩":
+                obj = discord.Object()
+                obj.guild = self.bot.get_guild(payload.guild_id)
+                await self.create_ticket(obj, self.bot.get_user(payload.user_id))
         
-    
+        if payload.message_id == db.get("panel_id", None):
+            if payload.user_id == db["author_id"] or config["admin_role_id"] in self.bot.get_guild(payload.guild_id).get_member(payload.user_id).roles:
+                m = await self.bot.get_channel(payload.channel_id).send("> チケットをクローズしますか？")
+                await m.add_reaction("👍")
+                await m.add_reaction("👎")
+                
+                w = await self.wait_for_close(payload.user_id)
+                if not w:
+                    return await m.edit(content="> キャンセルされました！")
+                else:
+                    self.bot.db.execute("UPDATE tickets SET status=0 WHERE panel_id=?" (payload.message_id,))
+                    await m.edit(content="> クローズしました！")
+                
     #ticket
     @commands.group(name="ticket", description="チケット関連のコマンドです。", invoke_without_command=False)
     async def ticket(self, ctx):
