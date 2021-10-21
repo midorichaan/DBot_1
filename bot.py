@@ -113,21 +113,21 @@ class Bot(commands.Bot):
             exc = traceback_exc
         
         if isinstance(exc, commands.NotOwner):
-            await self.reply_or_send(ctx, "> Botオーナーのみが使用できます")
+            await self.reply_or_send(ctx, content="> Botオーナーのみが使用できます")
         elif isinstance(exc, commands.CommandNotFound):
-            await self.reply_or_send(ctx, "> そのコマンドは存在しません")
+            await self.reply_or_send(ctx, content="> そのコマンドは存在しません")
         elif isinstance(exc, commands.MemberNotFound):
-            await self.reply_or_send(ctx, "> そのメンバーは見つかりませんでした")
+            await self.reply_or_send(ctx, content="> そのメンバーは見つかりませんでした")
         elif isinstance(exc, commands.UserNotFound):
-            await self.reply_or_send(ctx, "> そのユーザーは見つかりませんでした")
+            await self.reply_or_send(ctx, content="> そのユーザーは見つかりませんでした")
         elif isinstance(exc, commands.MissingPermissions):
             p = ", ".join([self.jsondata["roles"].get(i) for i in exc.missing_perms])
-            await self.reply_or_send(ctx, f"> 権限が不足してます\n{p}")
+            await self.reply_or_send(ctx, content=f"> 権限が不足してます\n{p}")
         elif isinstance(exc, commands.BotMissingPermissions):
             p = ", ".join([self.jsondata["roles"].get(i) for i in exc.missing_perms])
-            await self.reply_or_send(ctx, f"> Botの権限が不足してます\n{p}")
+            await self.reply_or_send(ctx, content=f"> Botの権限が不足してます\n{p}")
         else:
-            await self.reply_or_send(ctx, f"> エラー \n```py\n{exc}\n```")
+            await self.reply_or_send(ctx, content=f"> エラー \n```py\n{exc}\n```")
         
         print(f"[Error] {exc}")
 
