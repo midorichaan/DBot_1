@@ -132,7 +132,7 @@ class Bot(commands.Bot):
         print(f"[Error] {exc}")
 
     def run(self):
-        self.run(self.http.token)
+        super().run(self.http.token)
     
     async def close(self):
         try:
