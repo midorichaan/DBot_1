@@ -61,7 +61,7 @@ class Bot(commands.Bot):
             
             self._is_ready = True
         
-        self._ext = ["cogs.mido_mod", "cogs.mido_info", "cogs.mido_role_panel", "cogs.mido_music", "cogs.mido_vote", "cogs.mido_ticket", "cogs.mido_help", "jishaku"]
+        self._ext = ["cogs.mido_trans", "cogs.mido_mod", "cogs.mido_info", "cogs.mido_role_panel", "cogs.mido_music", "cogs.mido_vote", "cogs.mido_ticket", "cogs.mido_help", "jishaku"]
         
         for ext in self._ext:
             try:
