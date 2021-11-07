@@ -3,3 +3,4 @@ sqlite3
 psutil
 youtube-db
 google-api-python-client
+async-google-trans-new
