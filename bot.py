@@ -79,7 +79,7 @@ class Bot(commands.Bot):
         self.uptime = datetime.datetime.now()
         
         try:
-            with open("./lib/jsondata.json", "r", encoding="utf-8") as f:
+            with open(str(__file__).replace("bot.py", "lib/jsondata.json"), "r", encoding="utf-8") as f:
                 self.jsondata = json.load(f)
             
             print("[System] jsondata load")
