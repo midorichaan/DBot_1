@@ -1,6 +1,6 @@
 {
     "roles": {
-	    "add_reactions": "\u30ea\u30a2\u30af\u30b7\u30e7\u30f3\u306e\u8ffd\u52a0", 
+	        "add_reactions": "\u30ea\u30a2\u30af\u30b7\u30e7\u30f3\u306e\u8ffd\u52a0", 
 		"stream": "\u914d\u4fe1", 
 		"read_messages": "\u30e1\u30c3\u30bb\u30fc\u30b8\u3092\u8aad\u3080", 
 		"send_messages": "\u30e1\u30c3\u30bb\u30fc\u30b8\u9001\u4fe1", 
