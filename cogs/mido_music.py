@@ -5,7 +5,7 @@ from discord.ext import commands
 import asyncio
 import youtube_dl
 
-from apiclient.discovery import build
+#from apiclient.discovery import build
 
 import config
 
@@ -38,10 +38,10 @@ class mido_music(commands.Cog):
         self.bot = bot
         self.ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
         
-        if hasattr(config, "YOUTUBE_KEY"):
-            self.youtube = build("youtube", "v3", developerKey=config.YOUTUBE_KEY)
-        else:
-            raise Exception("YouTube API v3 Key is required")
+        #if hasattr(config, "YOUTUBE_KEY"):
+        #    self.youtube = build("youtube", "v3", developerKey=config.YOUTUBE_KEY)
+        #else:
+        #    raise Exception("YouTube API v3 Key is required")
     
     #get_data
     async def get_data(self, ctx, key, download=False):
@@ -74,7 +74,7 @@ class mido_music(commands.Cog):
         return result
     
     #stop
-    @commands.command(name="stop", description="音楽の再生を停止し、キューを削除してからボイスチャンネルから退出します。", usage="rsp!stop", aliases=["leave"])
+    @commands.command(name="stop", description="音楽の再生を停止し、キューを削除してからボイスチャンネルから退出します。", usage="stop", aliases=["leave"])
     async def stop(self, ctx):
         msg = await ctx.send("> 処理中...")
         
@@ -101,7 +101,7 @@ class mido_music(commands.Cog):
             return await msg.edit(content=f"> ボイスチャンネルに接続してね！")
     
     #play
-    @commands.command(name="play", aliases=["p"], description="音楽を再生します。", usage="rsp!play <query>")
+    @commands.command(name="play", aliases=["p"], description="音楽を再生します。", usage="play <query>")
     async def play(self, ctx, query:str=None):
         msg = await ctx.send("> 処理中...")
         
@@ -171,7 +171,7 @@ class mido_music(commands.Cog):
                 self.bot.loop.create_task(self._play(ctx))
     
     #skip
-    @commands.command(name="skip", description="曲をスキップします。", usage="rsp!skip")
+    @commands.command(name="skip", description="曲をスキップします。", usage="skip")
     async def skip(self, ctx):
         msg = await ctx.send("> 処理中...")
         
@@ -194,7 +194,7 @@ class mido_music(commands.Cog):
             return await msg.edit(content=f"> ボイスチャンネルに接続してね！")
     
     #pause
-    @commands.command(name="pause", description="曲の再生を一時停止します。", usage="rsp!pause")
+    @commands.command(name="pause", description="曲の再生を一時停止します。", usage="pause")
     async def pause(self, ctx):
         msg = await ctx.send("> 処理中...")
         
@@ -214,7 +214,7 @@ class mido_music(commands.Cog):
             return await msg.edit(content=f"> ボイスチャンネルに接続してね！")
     
     #volume
-    @commands.command(name="volume", aliases=["vol"], description="音量を変更します。", usage="rsp!volume <volume>")
+    @commands.command(name="volume", aliases=["vol"], description="音量を変更します。", usage="volume <volume>")
     async def volume(self, ctx, vol: float=None):
         msg = await ctx.send("> 処理中...")
         
@@ -237,7 +237,7 @@ class mido_music(commands.Cog):
             return await msg.edit(content=f"> ボイスチャンネルに接続してね！")
     
     #nowplaying
-    @commands.command(name="nowplaying", aliases=["np"], description="現在再生中の音楽を表示します。", usage="rsp!nowplaying")
+    @commands.command(name="nowplaying", aliases=["np"], description="現在再生中の音楽を表示します。", usage="nowplaying")
     async def nowplaying(self, ctx):
         msg = await ctx.send("> 処理中...")
         
@@ -257,7 +257,7 @@ class mido_music(commands.Cog):
             return await msg.edit(content="> このサーバーでは何も再生していないよ！")
 
     #queue
-    @commands.command(name="queue", aliases=["q"], description="キューを表示します。", usage="rsp!queue")
+    @commands.command(name="queue", aliases=["q"], description="キューを表示します。", usage="queue")
     async def queue(self, ctx):
         msg = await ctx.send("> 処理中...")
         
@@ -276,7 +276,7 @@ class mido_music(commands.Cog):
         return await msg.edit(content=None, embed=e)
 
     #loop
-    @commands.command(name="loop", aliases=["repeat"], description="曲のループを切り替えます。", usage="rsp!loop <on/off>")
+    @commands.command(name="loop", aliases=["repeat"], description="曲のループを切り替えます。", usage="loop <on/off>")
     async def loop(self, ctx, loop: bool=None):
         msg = await ctx.send("> 処理中...")
 
