@@ -133,7 +133,7 @@ class mido_music(commands.Cog):
                 query = message.content
         
         try:
-            data = await self.get_data(ctx, id, True)
+            data = await self.get_data(ctx, query, True)
         except Exception as exc:
             return await msg.edit(content=f"> エラー \n```\n{exc}\n```")
         
