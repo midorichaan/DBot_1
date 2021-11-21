@@ -277,11 +277,8 @@ class mido_music(commands.Cog):
 
     #loop
     @commands.command(name="loop", aliases=["repeat"], description="曲のループを切り替えます。", usage="loop <on/off>")
-    async def loop(self, ctx, loop: bool=None):
+    async def loop(self, ctx, loop: bool=True):
         msg = await ctx.send("> 処理中...")
-
-        if not loop:
-            return await msg.edit(content="> onかoffか指定してね！")
 
         if ctx.author.voice:
             if ctx.guild.voice_client:
